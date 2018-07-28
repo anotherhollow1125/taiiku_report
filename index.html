@@ -62,14 +62,14 @@
     <div class="no-print">
     <table class="form">
         <tbody>
-            <tr><td>握力:</td><td><input type="number" class="data" name="gripStrength" /></td><td>kg</td></tr>
-            <tr><td>上体起こし:</td><td><input type="number" class="data" name="sittingUp" /></td><td>回</td></tr>
-            <tr><td>長座体前屈:</td><td><input type="number" class="data" name="longSeatFlexion" /></td><td>cm</td></tr>
-            <tr><td>反復横跳び:</td><td><input type="number" class="data" name="repeatedLateralJump" /></td><td>点</td></tr>
-            <tr><td>持久走:</td><td><input type="number" class="data" name="endurance" /></td><td>秒 (凡例: 1分50 -> 110)</td></tr>
-            <tr><td>50m走:</td><td><input type="number" class="data" name="running50m" /></td><td>秒</td></tr>
-            <tr><td>立ち幅跳び:</td><td><input type="number" class="data" name="standingWidthJump" /></td><td>cm</td></tr>
-            <tr><td>ハンドボール投げ:</td><td><input type="number" class="data" name="handballThrow" /></td><td>m</td></tr>
+            <tr><td>握力:</td><td><input type="number" class="data" name="gripStrength" value="1"/></td><td>kg</td></tr>
+            <tr><td>上体起こし:</td><td><input type="number" class="data" name="sittingUp" value="1"/></td><td>回</td></tr>
+            <tr><td>長座体前屈:</td><td><input type="number" class="data" name="longSeatFlexion" value="1"/></td><td>cm</td></tr>
+            <tr><td>反復横跳び:</td><td><input type="number" class="data" name="repeatedLateralJump" value="1"/></td><td>点</td></tr>
+            <tr><td>持久走:</td><td><input type="number" class="data" name="endurance" value="600"/></td><td>秒 (凡例: 1分50 -> 110)</td></tr>
+            <tr><td>50m走:</td><td><input type="number" class="data" name="running50m" value="10"/></td><td>秒</td></tr>
+            <tr><td>立ち幅跳び:</td><td><input type="number" class="data" name="standingWidthJump" value="1"/></td><td>cm</td></tr>
+            <tr><td>ハンドボール投げ:</td><td><input type="number" class="data" name="handballThrow" value="1"/></td><td>m</td></tr>
         </tbody>
     </table>
     &nbsp;&nbsp;<button id="showResult">反映</button>
@@ -196,6 +196,7 @@ let myRadar,
         handballThrow: [13, 16, 19, 22, 25, 28, 31, 34, 37]
     };
 document.querySelector("#showResult").addEventListener("click", function(){
+    try{
     ipts = document.querySelectorAll("input.data");
     let records = [],
         scores = [],
@@ -208,6 +209,7 @@ document.querySelector("#showResult").addEventListener("click", function(){
             name = ipt.getAttribute("name");
         let border = borders[name];
         if(name == "running50m") record = Math.round(record*10)/10;
+        if(!record || record < 0) throw "InvalidNum";
         records.push(record);
         recordTds[j].textContent = record;
         for(let i=0;i < 8;i++) {
@@ -229,6 +231,10 @@ document.querySelector("#showResult").addEventListener("click", function(){
     });
 
     if(canvas && ctx) showRader(canvas, container, ctx, scores);
+    } catch(e) {
+        console.log(e);
+        return;
+    }
 }, false);
 
 Chart.pluginService.register({
@@ -244,7 +250,15 @@ function showRader(canvas, container, ctx, scores){
     let config = {
         type: 'radar',
         data: {
-            labels: ["握力\n(筋力)", "上体起こし\n(筋力・筋持久力)", "長座体前屈\n(柔軟性)", "反復横跳び\n(敏捷性)", "持久走\n(全身持久力)", "50m走\n(スピード)", "立ち幅跳び\n(筋パワー)", "ﾊﾝﾄﾞﾎﾞｰﾙ投げ\n(巧緻性・筋パワー)"],
+            labels: ["握力\n(筋力)"
+                    ,"上体起こし\n(筋力・筋持久力)"
+                    ,"長座体前屈\n(柔軟性)"
+                    ,"反復横跳び\n(敏捷性)"
+                    ,"持久走\n(全身持久力)"
+                    ,"50m走\n(スピード)"
+                    ,"立ち幅跳び\n(筋パワー)"
+                    ,"ﾊﾝﾄﾞﾎﾞｰﾙ投げ\n(巧緻性・筋パワー)"
+                    ],
             datasets: [{
                 label: "今回の結果",
                 backgroundColor: "rgba(255, 255, 255, 0)",
@@ -305,6 +319,8 @@ function showRader(canvas, container, ctx, scores){
 
     myRadar = new Chart(canvas, config);
 }
+
+document.querySelector("#showResult").click();
 
 }, false);
     </script>
