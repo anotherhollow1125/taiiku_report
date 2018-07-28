@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>健康・体力つくり実習レポート課題 1</title>
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js"></script>
+    <!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+    <style>
+    div.print {
+        display: none;
+    }
+    div.print, div.no-print {
+        margin: 0;
+        padding: 0;
+    }
+    @media print {
+        div.print {
+            display: block;
+        }
+        div.no-print {
+            display: none;
+        }
+    }
+
+    h1 {
+        text-align: center;
+    }
+    
+    #canvas-container {
+        position: relative;
+        width: 100%;
+        height: 50%;
+        max-width: 1000px;
+        max-height: 1000px;
+    }
+
+    table.records {
+        margin: 0 auto;
+        border-collapse: collapse;
+        border: 1px solid black;
+    }
+
+    table.records th, table.records td {
+        /* width: 90px; */
+        text-align: center;
+        border: 1px solid black;
+        padding: 5px;
+    }
+    table.records th {
+        min-width: 90px;
+    }
+
+    tr.small-font th, tr.small-font td, td.small-font {
+        font-size: 10px;
+    }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+    <table class="form">
+        <tbody>
+            <tr><td>握力:</td><td><input type="number" class="data" name="gripStrength" /></td><td>kg</td></tr>
+            <tr><td>上体起こし:</td><td><input type="number" class="data" name="sittingUp" /></td><td>回</td></tr>
+            <tr><td>長座体前屈:</td><td><input type="number" class="data" name="longSeatFlexion" /></td><td>cm</td></tr>
+            <tr><td>反復横跳び:</td><td><input type="number" class="data" name="repeatedLateralJump" /></td><td>点</td></tr>
+            <tr><td>持久走:</td><td><input type="number" class="data" name="endurance" /></td><td>秒 (凡例: 1分50 -> 110)</td></tr>
+            <tr><td>50m走:</td><td><input type="number" class="data" name="running50m" /></td><td>秒</td></tr>
+            <tr><td>立ち幅跳び:</td><td><input type="number" class="data" name="standingWidthJump" /></td><td>cm</td></tr>
+            <tr><td>ハンドボール投げ:</td><td><input type="number" class="data" name="handballThrow" /></td><td>m</td></tr>
+        </tbody>
+    </table>
+    &nbsp;&nbsp;<button id="showResult">反映</button>
+    </div>
+    <div class="print"><br /><h1>体力テストの結果</h1></div>
+    <br /><br />
+    <div id="canvas-container">
+        <table class="records" border="0" cellpadding="0">
+            <tbody>
+                <tr class="small-font">
+                    <td colspan="2" rowspan="2"></td>
+                    <th rowspan="2">握力<br />(kg)</th>
+                    <th rowspan="2">上体起こし<br />(回)</th>
+                    <th rowspan="2">長座体前屈<br />(cm)</th>
+                    <th rowspan="2">反復横跳び<br />(点)</th>
+                    <th rowspan="2">持久走<br />(秒)</th>
+                    <th rowspan="2">50m走<br />(秒)</th>
+                    <th rowspan="2">立ち幅跳び<br />(cm)</th>
+                    <th rowspan="2">ﾊﾝﾄﾞﾎﾞｰﾙ投げ<br />(m)</th>
+                    <th rowspan="2">総合点<br />(点)</th>
+                </tr><tr></tr>
+                <tr>
+                    <td rowspan="2" class="small-font" style="border-right: none;">今回の結果</td>
+                    <td class="small-font" style="border-left: none;">記録</td>
+                    <td class="record"></td>
+                    <td class="record"></td>
+                    <td class="record"></td>
+                    <td class="record"></td>
+                    <td class="record"></td>
+                    <td class="record"></td>
+                    <td class="record"></td>
+                    <td class="record"></td>
+                    <td class="record"></td>
+                </tr>
+                <tr>
+                    <td class="small-font" style="border-left: none;">判定</td>
+                    <td class="score"></td>
+                    <td class="score"></td>
+                    <td class="score"></td>
+                    <td class="score"></td>
+                    <td class="score"></td>
+                    <td class="score"></td>
+                    <td class="score"></td>
+                    <td class="score"></td>
+                    <td class="score"></td>
+                </tr>
+                <tr>
+                    <td rowspan="2" class="small-font" style="border-right: none;">電通大平均</td>
+                    <td class="small-font" style="border-left: none;">記録</td>
+                    <td>38.0</td>
+                    <td>28.4</td>
+                    <td>44.7</td>
+                    <td>56.3</td>
+                    <td>420</td>
+                    <td>7.6</td>
+                    <td>219.0</td>
+                    <td>22.4</td>
+                    <td>47.1</td>
+                </tr>
+                <tr>
+                    <td class="small-font" style="border-left: none;">判定</td>
+                    <td>6</td>
+                    <td>7</td>
+                    <td>6</td>
+                    <td>8</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>6</td>
+                    <td>5</td>
+                    <td>C</td>
+                </tr>
+                <tr>
+                    <td rowspan="2" class="small-font" style="border-right: none;">全国平均</td>
+                    <td class="small-font" style="border-left: none;">記録</td>
+                    <td>41.6</td>
+                    <td>30.7</td>
+                    <td>48.2</td>
+                    <td>58.0</td>
+                    <td>384</td>
+                    <td>7.34</td>
+                    <td>229.9</td>
+                    <td>26.0</td>
+                    <td>54.7</td>
+                </tr>
+                <tr>
+                    <td class="small-font" style="border-left: none;">判定</td>
+                    <td>6</td>
+                    <td>8</td>
+                    <td>6</td>
+                    <td>8</td>
+                    <td>5</td>
+                    <td>6</td>
+                    <td>7</td>
+                    <td>6</td>
+                    <td>B</td>
+                </tr>
+            </tbody>
+        </table>
+        <br />
+        <br />
+        <br />
+        <canvas id="raderChart"></canvas>
+    </div>
+    <div class="no-print">
+    &nbsp;&nbsp;<button onclick="print();">印刷する</button><br />
+    &nbsp;&nbsp;※ そのまま印刷するとヘッダーとフッターが出てきてしまいます。<a href="https://faq.cybozu.info/alphascope/cybozu/web/kintone/Detail.aspx?id=2114&isCrawler=1" target="_blank">こことか</a>を参考に消してから印刷してください。
+    </div>
+    <script>
+
+addEventListener("load", function(){
+
+let myRadar,
+    canvas = document.querySelector("canvas#raderChart"),
+    container = document.querySelector("#canvas-container"),
+    ctx = canvas.getContext("2d"),
+    borders = { // a <= v && v < b
+        gripStrength: [18, 23, 28, 33, 38, 43, 47, 51, 56],
+        sittingUp: [13, 16, 19, 22, 25, 27, 30, 33, 35],
+        longSeatFlexion: [21, 28, 33, 39, 44, 49, 53, 58, 64],
+        repeatedLateralJump: [30, 37, 41, 45, 49, 53, 56, 60, 63],
+        endurance: [300, 317, 334, 356, 383, 411, 451, 500, 561],
+        running50m: [6.7, 6.9, 7.1, 7.3, 7.6, 8.0, 8.5, 9.1, 9.8],
+        standingWidthJump: [150, 170, 188, 203, 218, 230, 242, 254, 265],
+        handballThrow: [13, 16, 19, 22, 25, 28, 31, 34, 37]
+    };
+document.querySelector("#showResult").addEventListener("click", function(){
+    ipts = document.querySelectorAll("input.data");
+    let records = [],
+        scores = [],
+        scoreSum = 0,
+        recordTds = document.querySelectorAll("td.record"),
+        scoreTds = document.querySelectorAll("td.score");
+    ipts.forEach(function(ipt, j){
+        let record = parseFloat(ipt.value),
+            score = 1,
+            name = ipt.getAttribute("name");
+        let border = borders[name];
+        if(name == "running50m") record = Math.round(record*10)/10;
+        records.push(record);
+        recordTds[j].textContent = record;
+        for(let i=0;i < 8;i++) {
+            if(border[i] <= record && record < border[i+1]) {
+                score = i+2;
+            }
+        }
+        if(border[8] <= record) score = 10;
+        if(name == "running50m" || name == "endurance") score = 11-score;
+        scores.push(score);
+        scoreSum += score;
+        scoreTds[j].textContent = score;
+    });
+    recordTds[8].textContent = scoreSum;
+    scoreTds[8].textContent = "A";
+    let ranks = ["B", "C", "D", "E"];
+    [65, 54, 43, 31].forEach(function(b, i){
+        if(scoreSum < b) scoreTds[8].textContent = ranks[i];
+    });
+
+    if(canvas && ctx) showRader(canvas, container, ctx, scores);
+}, false);
+
+Chart.pluginService.register({
+    beforeDraw: function(c){
+        var ctx = c.chart.ctx;
+        ctx.fillStyle = "rgb(255, 255, 255)";
+        ctx.fillRect(0, 0, c.chart.width, c.chart.height);
+    }
+});
+
+function showRader(canvas, container, ctx, scores){
+    let ratio = container.clientWidth/1000;
+    let config = {
+        type: 'radar',
+        data: {
+            labels: ["握力\n(筋力)", "上体起こし\n(筋力・筋持久力)", "長座体前屈\n(柔軟性)", "反復横跳び\n(敏捷性)", "持久走\n(全身持久力)", "50m走\n(スピード)", "立ち幅跳び\n(筋パワー)", "ﾊﾝﾄﾞﾎﾞｰﾙ投げ\n(巧緻性・筋パワー)"],
+            datasets: [{
+                label: "今回の結果",
+                backgroundColor: "rgba(255, 255, 255, 0)",
+                borderColor: "rgb(0, 0, 0)",
+                pointBackgroundColor: "rgb(0, 0, 0)",
+                // data: [5, 4, 4, 6, 4, 4, 4, 3]
+                data: scores
+            },{
+                label: "電通大平均",
+                backgroundColor: "rgba(255, 255, 255, 0)",
+                borderColor: "rgb(127, 127, 127)",
+                pointBackgroundColor: "rgb(127, 127, 127)",
+                // pointStyle: "triangle",
+                borderDash: [20, 10],
+                data: [6, 7, 6, 8, 4, 5, 6, 5]
+            },{
+                label: "全国平均",
+                backgroundColor: "rgba(255, 255, 255, 0)",
+                borderColor: "rgb(160, 160, 160)",
+                pointBackgroundColor: "rgb(255, 255, 255)",
+                pointBorderColor: "rgb(160, 160, 160)",
+                // pointStyle: "rectRot",
+                borderDash: [5, 5],
+                data: [6, 8, 6, 8, 5, 6, 7, 6]
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: false,
+            showTooltips: false,
+            legend: {
+                display: true,
+                labels: {
+                    fontColor: "black"
+                },
+                position: "bottom"
+            },
+            scale: {
+                display: true,
+                pointLabels: {
+                    fontSize: 15*ratio,
+                    fontColor: "black"
+                },
+                ticks: {
+                    display: true,
+                    fontSize: 12*ratio,
+                    min: 0,
+                    max: 10,
+                    beginAtZero: true
+                },
+                gridLines: {
+                    display: true
+                }
+            }
+        }
+    };
+
+    myRadar = new Chart(canvas, config);
+}
+
+}, false);
+    </script>
+</body>
+</html>
